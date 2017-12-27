@@ -8,6 +8,7 @@ import argparse
 from torch.autograd import Variable
 import torch.utils.data as data
 from data import v2, v1, AnnotationTransform, VOCDetection, detection_collate, VOCroot, VOC_CLASSES
+from data.svg_data import SVGDetection, SVG_CLASSES, LabelTransform
 from utils.augmentations import SSDAugmentation
 from layers.modules import MultiBoxLoss
 from ssd import build_ssd
@@ -36,6 +37,7 @@ parser.add_argument('--visdom', default=False, type=str2bool, help='Use visdom t
 parser.add_argument('--send_images_to_visdom', type=str2bool, default=False, help='Sample a random image from each 10th batch, send it to visdom after augmentations step')
 parser.add_argument('--save_folder', default='weights/', help='Location to save checkpoint models')
 parser.add_argument('--voc_root', default=VOCroot, help='Location of VOC root directory')
+parser.add_argument('--svg_root', default='dataset/', help='Location of VOC root directory')
 args = parser.parse_args()
 
 if args.cuda and torch.cuda.is_available():
@@ -50,9 +52,10 @@ if not os.path.exists(args.save_folder):
 
 train_sets = [('2007', 'trainval'), ('2012', 'trainval')]
 # train_sets = 'train'
+image_set = 'polygon/'
 ssd_dim = 300  # only support 300 now
 means = (104, 117, 123)  # only support voc now
-num_classes = len(VOC_CLASSES) + 1
+num_classes = len(SVG_CLASSES) + 1
 batch_size = args.batch_size
 accum_batch_size = 32
 iter_size = accum_batch_size / batch_size
@@ -115,8 +118,8 @@ def train():
     epoch = 0
     print('Loading Dataset...')
 
-    dataset = VOCDetection(args.voc_root, train_sets, SSDAugmentation(
-        ssd_dim, means), AnnotationTransform())
+    dataset = SVGDetection(args.svg_root, image_set,  SSDAugmentation(
+        ssd_dim, means), LabelTransform())
 
     epoch_size = len(dataset) // args.batch_size
     print('Training SSD on', dataset.name)

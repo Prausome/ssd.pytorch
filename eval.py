@@ -13,8 +13,6 @@ from torch.autograd import Variable
 from data import VOCroot
 from data import VOC_CLASSES as labelmap
 import torch.utils.data as data
-
-from data import AnnotationTransform, VOCDetection, BaseTransform, VOC_CLASSES
 from ssd import build_ssd
 
 import sys

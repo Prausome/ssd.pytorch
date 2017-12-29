@@ -51,10 +51,11 @@ if not os.path.exists(args.save_folder):
     os.mkdir(args.save_folder)
 
 train_sets = [('2007', 'trainval'), ('2012', 'trainval')]
+image_set = 'polygon_n/'
 # train_sets = 'train'
-image_set = 'polygon/'
 ssd_dim = 300  # only support 300 now
-means = (104, 117, 123)  # only support voc now
+means = (102, 102, 102)  # only support voc now
+#num_classes = len(VOC_CLASSES) + 1
 num_classes = len(SVG_CLASSES) + 1
 batch_size = args.batch_size
 accum_batch_size = 32
@@ -73,7 +74,7 @@ ssd_net = build_ssd('train', 300, num_classes)
 net = ssd_net
 
 if args.cuda:
-    net = torch.nn.DataParallel(ssd_net)
+    #net = torch.nn.DataParallel(ssd_net)
     cudnn.benchmark = True
 
 if args.resume:
@@ -120,6 +121,8 @@ def train():
 
     dataset = SVGDetection(args.svg_root, image_set,  SSDAugmentation(
         ssd_dim, means), LabelTransform())
+    # dataset = VOCDetection(args.voc_root, train_sets, SSDAugmentation(
+    #     ssd_dim, means), AnnotationTransform())
 
     epoch_size = len(dataset) // args.batch_size
     print('Training SSD on', dataset.name)
@@ -215,7 +218,7 @@ def train():
                 )
         if iteration % 5000 == 0:
             print('Saving state, iter:', iteration)
-            torch.save(ssd_net.state_dict(), 'weights/ssd300_0712_' +
+            torch.save(ssd_net.state_dict(), 'weights/ssd300_1229_' +
                        repr(iteration) + '.pth')
     torch.save(ssd_net.state_dict(), args.save_folder + '' + args.version + '.pth')
 

@@ -133,7 +133,7 @@ class SVGGenerator():
         svg_arr.append(svg.toxml())
 
         if in_data == None:
-            num_element = random.randrange(1,5)
+            num_element = random.randrange(4,10)
             svg_elements = ['circle', 'rect', 'line']
             #svg_elements = ['circle']
             element_arr = sorted(np.random.choice(svg_elements, num_element ))
@@ -276,10 +276,10 @@ class SVGGenerator():
                 element_data.append(str(r))
                 element_data.append(str(g))
                 element_data.append(str(b))
-                xmin = str(x_1)
-                ymin = str(y_1)
-                xmax = str(x_2)
-                ymax = str(y_2)
+                xmin = str(min(x_1,x_2))
+                ymin = str(min(y_1,y_2))
+                xmax = str(max(x_1,x_2))
+                ymax = str(max(y_1,y_2))
 
             temp_arr.extend([xmin, ymin, xmax, ymax, element]) 
             tot_data.extend(temp_arr)
@@ -296,7 +296,7 @@ def main():
 
     SVGGEN = SVGGenerator()
 
-    root_path = '../dataset/polygon_test/'
+    root_path = '../dataset/polygon_n_test/'
     trg_bitmap_dir = root_path + 'bitmap/'
     trg_svg_dir = root_path + 'svg/'
     trg_label_dir = root_path + 'label/'

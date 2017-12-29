@@ -40,18 +40,19 @@ class LabelTransform(object):
         Returns:
             a list containing lists of bounding boxes  [bbox coords, class name]
         """
-
         res = [] 
         with open(target, 'r') as f:
             tot_arr = ' '.join(f).split()
         nmb = int(len(tot_arr) / 5 )
         for j in range(nmb):
-            label_arr = tot_arr[j:(j+1)*5]
+            label_arr = tot_arr[j*5:(j+1)*5]
             name = label_arr[-1]
             bndbox = []
             for i, label in enumerate(label_arr[:-1]):
                 cur_pt = int(label) -1 
-                cur_pt = cur_pt / width if i % 2 == 0 else cur_pt /height
+                if cur_pt == 0:
+                    cur_pt += 0.1
+                cur_pt = float(cur_pt) / width if i % 2 == 0 else cur_pt /height
                 bndbox.append(cur_pt)
             label_idx = self.class_to_ind[name]
             bndbox.append(label_idx)
@@ -77,7 +78,7 @@ class SVGDetection(data.Dataset):
         dataset_name (string, optional): which dataset to load
             (default: 'VOC2007')
     """
-    def __init__(self, root_path, image_set, transform=None, target_transform=None, dataset_name='fish_detection'):
+    def __init__(self, root_path, image_set, transform=None, target_transform=None, dataset_name='svg_detection'):
         
         # root
         # image_sets
@@ -151,7 +152,7 @@ class SVGDetection(data.Dataset):
                 eg: ('001718', [('dog', (96, 13, 438, 332))])
         '''
         img_id = self.ids[index]
-        anno = self.image_annots % img_id
+        anno = self._annopath % img_id
         gt = self.target_transform(anno, 1, 1)
         return img_id[1], gt
 
